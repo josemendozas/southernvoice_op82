@@ -1,0 +1,260 @@
+*============================================================*
+*	Regresiones SV
+*============================================================*
+
+clear all
+
+pause on
+set more off
+
+global wd "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV_region"
+
+/*						Peru 				 */
+
+***************	 Migrantes Nacionales Recientes
+
+use "$wd/Peru/datos_graficos", clear
+
+label define periodo_ 1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12"
+label values periodo_ periodo_
+
+* Ocupado dentro de la PEA
+
+line beta lb up z periodo_ if v == 1 & inter == 0, lcolor(blue red red black) ///
+name(a1,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 1 & inter == 1, lcolor(blue red red black) ///
+name(a1_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a1 a1_i, ycommon title("Cambio porcentual en la probabilidad de estar ocupado dentro de la PEA")
+
+* Activo dentro de la PET
+
+line beta lb up z periodo_ if v == 2 & inter == 0, lcolor(blue red red black) ///
+name(a2,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 2 & inter == 1, lcolor(blue red red black) ///
+name(a2_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a2 a2_i, ycommon title("Cambio porcentual en la probabilidad de estar activo dentro de la PET")
+
+* ln(Ingreso Total, s/2018)
+
+line beta lb up z periodo_ if v == 3 & inter == 0, lcolor(blue red red black) ///
+name(a3,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 3 & inter == 1, lcolor(blue red red black) ///
+name(a3_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a3 a3_i, ycommon title("Cambio porcentual en el ingreso total constante")
+
+* ln(Horas de trabajo mensual)
+
+line beta lb up z periodo_ if v == 4 & inter == 0, lcolor(blue red red black) ///
+name(a4,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 4 & inter == 1, lcolor(blue red red black) ///
+name(a4_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a4 a4_i, ycommon title("Cambio porcentual en el número de horas de trabajo al mes")
+
+* ln(Ingreso total por hora, S/. 2018)
+
+line beta lb up z periodo_ if v == 5 & inter == 0, lcolor(blue red red black) ///
+name(a5,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 5 & inter == 1, lcolor(blue red red black) ///
+name(a5_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a5 a5_i, ycommon title("Cambio porcentual en el ingreso total constante por hora")
+
+***************	 Migrantes Extranjero
+
+use "$wd/Peru/datos_graficos_ext", clear
+
+label define periodo_ 1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12"
+label values periodo_ periodo_
+
+* Ocupado dentro de la PEA
+
+line beta lb up z periodo_ if v == 1 & inter == 0, lcolor(blue red red black) ///
+name(a1,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 1 & inter == 1, lcolor(blue red red black) ///
+name(a1_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a1 a1_i, ycommon title("Cambio porcentual en la probabilidad de estar ocupado dentro de la PEA")
+
+* Activo dentro de la PET
+
+line beta lb up z periodo_ if v == 2 & inter == 0, lcolor(blue red red black) ///
+name(a2,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 2 & inter == 1, lcolor(blue red red black) ///
+name(a2_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a2 a2_i, ycommon title("Cambio porcentual en la probabilidad de estar activo dentro de la PET")
+
+* ln(Ingreso Total, s/2018)
+
+line beta lb up z periodo_ if v == 3 & inter == 0, lcolor(blue red red black) ///
+name(a3,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 3 & inter == 1, lcolor(blue red red black) ///
+name(a3_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a3 a3_i, ycommon title("Cambio porcentual en el ingreso total constante")
+
+* ln(Horas de trabajo mensual)
+
+line beta lb up z periodo_ if v == 4 & inter == 0, lcolor(blue red red black) ///
+name(a4,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 4 & inter == 1, lcolor(blue red red black) ///
+name(a4_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a4 a4_i, ycommon title("Cambio porcentual en el número de horas de trabajo al mes")
+
+* ln(Ingreso total por hora, S/. 2018)
+
+line beta lb up z periodo_ if v == 5 & inter == 0, lcolor(blue red red black) ///
+name(a5,replace) legend(off) ylabel(,grid) xtitle("") ///
+title("Coeficiente estimada para cada periodo") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+line beta lb up z periodo_ if v == 5 & inter == 1, lcolor(blue red red black) ///
+name(a5_i,replace) legend(off) ylabel(,grid)  xtitle("") ///
+title("Coeficiente estimada para interacción") ///
+xlabel(1 "2019M1-2020M3" 2 "2020M9-2020M11" 3 "2020M12-2021M2" 4 "2021M3-2021M5" 5 "2021M6-2021M8" 6 "2021M9-2021M12" ,grid labsize(*0.6) angle(90))
+
+graph combine a5 a5_i, ycommon title("Cambio porcentual en el ingreso total constante por hora")
+
+
+
+******** Perú
+
+* Gráfico de barras para cada uno
+
+use "$wd/Peru/datos_graficos_beta.dta", clear
+
+twoway (bar beta var_, color(blue%30)) ///
+ (rcap up lb var_, color(red%40)), ///
+ legend(off) ylabel(-20(5)30,grid) xtitle("") ytitle("%") name(b1,replace) ///
+ title("Migrante Interno Reciente (Peruano)") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" 4 "Horas de trabajo mensual" 5 "Ingreso total por hora Constante" ,grid labsize(*0.6) angle(20))
+
+use "$wd/Peru/datos_graficos_ext_beta.dta", clear
+
+twoway (bar beta var_, color(blue%30)) ///
+ (rcap up lb var_, color(red%40)), ///
+ legend(off) ylabel(-20(5)30,grid) xtitle("") ytitle("%") name(b2,replace) ///
+ title("Migrante Internacional") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" 4 "Horas de trabajo mensual" 5 "Ingreso total por hora Constante" ,grid labsize(*0.6) angle(20))
+
+graph combine b1 b2, ycommon 
+
+******** Chile
+
+* Gráfico de barras para cada uno
+use "$wd/Peru/datos_graficos_beta_chile.dta"
+
+twoway (bar beta var_ if grupo == 1, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 1, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b1,replace) ///
+ title("Migrante Interno Reciente (Chileno)") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" 4 "Horas de trabajo mensual" 5 "Ingreso total por hora Constante" ,grid labsize(*0.6) angle(20))
+
+twoway (bar beta var_ if grupo == 2, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 2, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b2,replace) ///
+ title("Migrante Interno de Toda la Vida (Chileno)") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" 4 "Horas de trabajo mensual" 5 "Ingreso total por hora Constante" ,grid labsize(*0.6) angle(20))
+
+graph combine b1 b2, ycommon 
+
+twoway (bar beta var_ if grupo == 3, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 3, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b1,replace) ///
+ title("Migrante Extranjero Reciente") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" 4 "Horas de trabajo mensual" 5 "Ingreso total por hora Constante" ,grid labsize(*0.6) angle(20))
+
+twoway (bar beta var_ if grupo == 4, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 4, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b2,replace) ///
+ title("Migrante Extranjero de Toda la Vida") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" 4 "Horas de trabajo mensual" 5 "Ingreso total por hora Constante" ,grid labsize(*0.6) angle(20))
+
+graph combine b1 b2, ycommon 
+
+******** Paraguay
+
+* Gráfico de barras para cada uno
+use "$wd/Peru/datos_graficos_beta_paraguay.dta"
+
+
+twoway (bar beta var_ if grupo == 1, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 1, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b1,replace) ///
+ title("Migrante Extranjero Reciente") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" ,grid labsize(*0.6) angle(20))
+
+twoway (bar beta var_ if grupo == 2, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 2, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b2,replace) ///
+ title("Migrante Extranjero de Toda la Vida") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" ,grid labsize(*0.6) angle(20))
+
+graph combine b1 b2, ycommon 
+
+twoway (bar beta var_ if grupo == 3, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 3, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b1,replace) ///
+ title("Migrante Interno Reciente (Paraguayo)") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" ,grid labsize(*0.6) angle(20))
+
+twoway (bar beta var_ if grupo == 4, color(blue%30)) ///
+ (rcap up lb var_ if grupo == 4, color(red%40)), ///
+ legend(off) ylabel(,grid) xtitle("") ytitle("%") name(b2,replace) ///
+ title("Migrante Interno de Toda la Vida (Paraguayo)") /// 
+xlabel(1 "Ocupado dentro de la PEA" 2 "Activo dentro de la PET" 3 "Ingreso Total Constante Mensual" ,grid labsize(*0.6) angle(20))
+
+graph combine b1 b2, ycommon 
+
+
+
