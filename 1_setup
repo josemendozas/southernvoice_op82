@@ -1,0 +1,503 @@
+
+/***************************************************************************
+						Southern Voices - Regional Regressiones
+
+Coder: Jose A. Mendoza Sánchez
+****************************************************************************/
+
+/*
+Este código se compone de tres secciones:
+- Set up de la base para Perú. 
+	-- Se toman los módulos 2, 3, 4 y "sumarias" de la ENAHO para 2018-2021
+
+- Set up de la base para Chile.
+	--	
+
+- Set up de la base para Paraguay
+	-- 
+
+*/
+
+******************************
+******					
+******					Peru
+******					
+******************************
+****************************************************************************/
+clear 	all
+set 	more off
+set scheme s1color
+
+global dir "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV"
+
+global datadir "/Users/joseantoniomendozasanchez/Dropbox/Bases/ENAHO"
+
+foreach x of numlist 2018/2021{
+	use "$datadir/`x'/enaho01-`x'-200", clear
+
+	merge 1:1 conglome vivienda hogar codperso using "$datadir/`x'/enaho01a-`x'-300", keep(3) nogen
+
+	merge 1:1 conglome vivienda hogar codperso using "$datadir/`x'/enaho01a-`x'-400", keep(3) nogen
+
+	merge 1:1 conglome vivienda hogar codperso using "$datadir/`x'/enaho01a-`x'-500", keep(3) nogen 
+
+	merge m:1 conglome vivienda hogar using "$datadir/`x'/sumaria-`x'", keep(3) nogen 
+
+	gen year = `x'
+	destring(codtarea codtiempo), replace
+	tempfile b`x'
+	save `b`x''
+}
+
+
+use `b2018'
+
+append using `b2019'
+append using `b2020'
+append using `b2021'
+
+* Rural
+gen rural = (estrato==6 | estrato==7 | estrato==8) 
+
+* Edad
+gen edad = p208a
+
+* Mujer
+gen mujer = (p207 == 2)
+
+* Provincia
+gen prov = substr(ubigeo,1,4)
+destring(prov), replace
+
+* Departamento
+gen dpto = substr(ubigeo,1,2)
+destring(dpto), replace
+
+* Años de educación
+gen educ = .
+replace educ = 0 if inlist(p301a , 1,2) // Sin nivel/inicial
+replace educ = 1 if p301a == 3 & (p301b == 1 | p301c == 1) // primaria incompleta
+replace educ = 2 if p301a == 3 & (p301b == 2 | p301c == 2) // primaria incompleta
+replace educ = 3 if p301a == 3 & (p301b == 3 | p301c == 3) // primaria incompleta
+replace educ = 4 if p301a == 3 & (p301b == 4 | p301c == 4) // primaria incompleta
+replace educ = 5 if p301a == 3 & (p301b == 5 | p301c == 5) // primaria incompleta
+replace educ = 6 if p301a == 4 // primaria completa
+replace educ = 7 if p301a == 5 & (p301b == 1 | p301c == 1) // secundaria incompleta
+replace educ = 8 if p301a == 5 & (p301b == 2 | p301c == 2) // secundaria incompleta
+replace educ = 9 if p301a == 5 & (p301b == 3 | p301c == 3) // secundaria incompleta
+replace educ = 10 if p301a == 5 & (p301b == 4 | p301c == 4) // secundaria incompleta
+replace educ = 11 if p301a == 6 // secundaria completa
+replace educ = 12 if p301a == 7 // sup no uni incompleta
+replace educ = 14 if p301a == 8 // sup no uni completa
+replace educ = 13 if p301a == 9 // sup uni incompleta
+replace educ = 16 if p301a == 10 // sup uni completa
+replace educ = 18 if p301a == 11 // posgrado
+
+* PEA Categorías
+gen pob_categoria = 1 if (ocu500 == 1)
+replace pob_categoria = 2 if (ocu500 == 2 | ocu500 == 3)
+replace pob_categoria = 3 if (ocu500 == 4)
+label define pob_categoria 1 "Ocupado" 2 "Desocupado" 3 "Inactivo"
+label values pob_categoria pob_categoria
+tab pob_categoria, gen(pob_categoria_)
+
+* Categorías Ocupacionales
+gen cat_ocup = p507
+label values cat_ocup p507
+tab cat_ocup, gen(cat_ocup_)
+
+* Formalidad 
+gen informal = 1 if ocupinf == 1
+replace informal = 0 if ocupinf == 2
+label define informal 1 "Informal" 0 "Formal"
+label values informal informal 
+
+/*		Transferencias	Anualizadas	y Deflactados	*/
+
+/*			Transferencias privadas			*/
+* Pensión de divorcio o separación				|	p5561
+egen trans_pri_1 = rowtotal(d5561c d5561e)
+replace trans_pri_1 = . if d5561c == . & d5561e == .
+
+* Pensión por alimentación						|	p5562
+egen trans_pri_2 = rowtotal(d5562c d5562e)
+replace trans_pri_2 = . if d5562c == . & d5562e == .
+
+* Pensión jubilación/cesantía?					|	p5564
+egen trans_pri_3 = rowtotal(d5564c d5564e)
+replace trans_pri_3 = . if d5564c == . & d5564e == .
+
+* Pensión por viudez, onfandad o sobrevivencia? |	p5565
+egen trans_pri_4 = rowtotal(d5565c d5565e)
+replace trans_pri_4 = . if d5565c == . & d5565e == .
+
+egen trans_pri = rowtotal(trans_pri_1 trans_pri_2 trans_pri_3 trans_pri_4)
+replace trans_pri = . if trans_pri_1 == . & trans_pri_2 == . & trans_pri_3 == . & trans_pri_4 == .
+
+/*			Remesas							*/
+* Remesas de otros hogares o personas			|	p5563
+egen trans_remesa_1 = rowtotal(d5563c d5563e)
+replace trans_remesa_1 = . if d5563c == . & d5563e == .
+
+* Otras transferencias de hogares				|	p5569
+egen trans_remesa_2 = rowtotal(d5569c d5569e)
+replace trans_remesa_2 = . if d5569c == . & d5569e == .
+
+egen trans_remesa = rowtotal(trans_remesa_1 trans_remesa_2)
+replace trans_remesa = . if trans_remesa_1 == . & trans_remesa_2 == .
+
+/*			Transferencias Públicas			*/
+* Transferencia del programa JUNTOS				|	p5566
+egen trans_pub_1 = rowtotal(d5566c d5566e)
+replace trans_pub_1 = . if d5566c == . & d5566e == .
+
+* Transferencia del Programa Pensión 65    		|	p5567
+egen trans_pub_2 = rowtotal(d5567c d5567e)
+replace trans_pub_2 = . if d5567c == . & d5567e == .
+
+* Otras transferencias de las instituciones públicas o privadas		|	p5568
+egen trans_pub_3 = rowtotal(d5568c d5568e)
+replace trans_pub_3 = . if d5568c == . & d5568e == .
+
+* Beca 18 										|	p55610
+egen trans_pub_4 = rowtotal(d55610c d55610e)
+replace trans_pub_4 = . if d55610c == . & d55610e == .
+
+* Programa bono FIDE 							|	p55611
+egen trans_pub_5 = rowtotal(d55611c d55611e)
+replace trans_pub_5 = . if d55611c == . & d55611e == .
+
+* Programa por servicio militar voluntario		|	p55612
+egen trans_pub_6 = rowtotal(d55612c d55612e)
+replace trans_pub_6 = . if d55612c == . & d55612e == .
+
+* Beneficio por profesor contratado del estado	|	p55613
+egen trans_pub_7 = rowtotal(d55613c d55613e)
+replace trans_pub_7 = . if d55613c == . & d55613e == .
+
+* Propina de la escuela de la PNP y FF.AA. 		|	p55614
+egen trans_pub_8 = rowtotal(d55614c d55614e)
+replace trans_pub_8 = . if d55614c == . & d55614e == .
+
+egen trans_pub = rowtotal(trans_pub_1 trans_pub_2 trans_pub_3 trans_pub_4 trans_pub_5 trans_pub_6 trans_pub_7 trans_pub_8)
+replace trans_pub = . if trans_pub_1 == . & trans_pub_2 == . & trans_pub_3 == . & trans_pub_4 == . & trans_pub_5 == . & trans_pub_6 == . & trans_pub_7 == . & trans_pub_8 == .
+
+/*		Ingresos Anualizadas y Deflactados			*/
+
+* Ingreso principal dependiente mensual real
+gen ing_p_dep = i524a1
+
+* Ingreso principal independiente mensual real
+gen ing_p_ind = i530
+
+* Ingreso secundario dependiente mensual real
+gen ing_s_dep =  i538a1
+
+* Ingreso secundario independiente mensual real
+gen ing_s_ind = i541a
+
+* Ingreso principal mensual real
+egen ing_p = rowtotal(ing_p_dep ing_p_ind)
+replace ing_p = . if ing_p_dep == . & ing_p_ind == . 
+
+* Ingreso secundario mensual real
+egen ing_s = rowtotal(ing_s_dep ing_s_ind)
+replace ing_s = . if ing_s_dep == . & ing_s_ind == . 
+
+* Ingreso total mensual real
+*egen ing_t = rowtotal(ing_p ing_s trans_pri trans_remesa trans_pub)
+*replace ing_t = . if ing_p == . & ing_s == . & trans_remesa == . & trans_pub == .
+egen ing_t = rowtotal(ing_p ing_s)
+replace ing_t = . if ing_p == . & ing_s == .
+replace ing_t = ing_t/12
+
+/*				Horas de trabajo 			*/
+
+* Horas trabajadas a la semana, principal
+gen h_p = i513t
+
+* Horas trabajadas a la semana, secundaria
+gen h_s = i518
+
+*Horas trabajadas al mes
+egen h_t = rowtotal(i513t i518)
+replace h_t = . if i513t == . & i518 == .
+replace h_t = h_t*30/7
+
+/*				Ingreso total por hora 			*/
+
+gen ing_h_t = ing_t/h_t
+
+/*				Categorías de Migración 			*/
+
+* Hace 5 años... ¿Vivía en este distrito?
+gen h5avivia = 1 if p401f == 1
+replace h5avivia = 0 if p401f == 2
+
+* En qué distrito, provincia y departamento vivía hace 5 años?
+gen h5avivia_origen_x = string(p401g,"%06.0f")
+replace h5avivia_origen_x = "" if h5avivia_origen_x == "."
+
+gen h5avivia_origen_prov = substr(h5avivia_origen_x,1,4)
+destring(h5avivia_origen_prov), replace
+
+gen h5avivia_origen_dpto = substr(h5avivia_origen_x,1,2)
+destring(h5avivia_origen_dpto), replace 
+
+* Cuando usted nació, ¿vivía su madre en este distrito?
+gen viviamadredistrito = 1 if p401g1 == 1
+replace viviamadredistrito = 0 if p401g1 == 2 | p401g1 == 3 /// (No y No sé)
+
+gen madre_origen_distrito = string(p401g2,"%06.0f")
+replace madre_origen_distrito = "" if madre_origen_distrito == "."
+
+gen madre_origen_prov =  substr(madre_origen_distrito,1,4)
+destring(madre_origen_prov), replace
+
+gen madre_origen_dpto =  substr(madre_origen_distrito,1,2)
+destring(madre_origen_dpto), replace
+
+* Extranjero 
+
+gen extranjero = 1 if madre_origen_dpto == 0
+replace extranjero = 0 if extranjero == . & madre_origen_dpto != .
+
+/*
+Hace 5 años, … ¿vivía en este distrito? (excluyendo de la muestra a quellos identificados
+como extranjeros). Se seleccionan aquellos que no vivían en el distritos hace 5 años 
+(también puede definirse en base a otra provincia u otra región).
+*/
+
+* Migrante Local Reciente | Considerando cambio en distrito, en provincia y en departamento
+
+gen migrante_loc_reciente_dist = 1 if h5avivia == 0 & extranjero == 0
+replace migrante_loc_reciente_dist = 0 if migrante_loc_reciente_dist == . & h5avivia != . & extranjero == 0
+
+gen migrante_loc_reciente_prov = 1 if h5avivia == 0 & prov != h5avivia_origen_prov & extranjero == 0
+replace migrante_loc_reciente_prov = 0 if migrante_loc_reciente_prov == . & h5avivia != . & extranjero == 0
+
+gen migrante_loc_reciente_dpto = 1 if h5avivia == 0 & dpto != h5avivia_origen_dpto & extranjero == 0
+replace migrante_loc_reciente_dpto = 0 if migrante_loc_reciente_dpto == . & h5avivia != . & extranjero == 0
+
+* Migrante Reciente | Considerando cambio en distrito, en provincia y en departamento
+
+gen migrante_reciente_dist = 1 if h5avivia == 0 
+replace migrante_reciente_dist = 0 if migrante_reciente_dist == . & h5avivia != .
+
+gen migrante_reciente_prov = 1 if h5avivia == 0 & prov != h5avivia_origen_prov
+replace migrante_reciente_prov = 0 if migrante_reciente_prov == . & h5avivia != .
+
+gen migrante_reciente_dpto = 1 if h5avivia == 0 & dpto != h5avivia_origen_dpto
+replace migrante_reciente_dpto = 0 if migrante_reciente_dpto == . & h5avivia != .
+
+* Migrante Local de Toda la Vida | Considerando cambio en distrito, en provincia y en departamento
+
+gen migrante_loc_tlv_dist = 1 if viviamadredistrito == 0 & extranjero == 0
+replace migrante_loc_tlv_dist = 0 if migrante_loc_tlv_dist == . & viviamadredistrito != . & extranjero == 0
+
+gen migrante_loc_tlv_prov = 1 if viviamadredistrito == 0 & prov != madre_origen_prov & extranjero == 0
+replace migrante_loc_tlv_prov = 0 if migrante_loc_tlv_prov == . & viviamadredistrito != . & extranjero == 0
+
+gen migrante_loc_tlv_dpto = 1 if viviamadredistrito == 0 & dpto != madre_origen_dpto & extranjero == 0
+replace migrante_loc_tlv_dpto = 0 if migrante_loc_tlv_dpto == . & viviamadredistrito != . & extranjero == 0 
+
+* Migrante de Toda la Vida | Considerando cambio en distrito, en provincia y en departamento
+
+gen migrante_tlv_dist = 1 if viviamadredistrito == 0 
+replace migrante_tlv_dist = 0 if migrante_tlv_dist == . & viviamadredistrito != . 
+
+gen migrante_tlv_prov = 1 if viviamadredistrito == 0 & prov != madre_origen_prov 
+replace migrante_tlv_prov = 0 if migrante_tlv_prov == . & viviamadredistrito != . 
+
+gen migrante_tlv_dpto = 1 if viviamadredistrito == 0 & dpto != madre_origen_dpto 
+replace migrante_tlv_dpto = 0 if migrante_tlv_dpto == . & viviamadredistrito != . 
+
+* Migrante extranjero 
+
+gen migrante_extranjero = 1 if extranjero == 1
+replace migrante_extranjero = 0 if extranjero == 0
+
+* Migrante extranjero reciente
+
+gen migrante_extranjero_reciente = 1 if h5avivia == 0 & extranjero == 1
+replace migrante_extranjero_reciente = 0 if migrante_extranjero_reciente == . & h5avivia != . & extranjero == 1
+
+summ migrant*
+
+* Sectores Económicos -CIIU 4ta revisión
+
+gen sector_cno = string(p505,"%03.0f")
+replace sector_cno = "" if sector_cno == "." 
+gen sector_cno_1d =  substr(sector_cno,1,1)
+destring(sector_cno_1d), replace
+
+gen sectores = 0 if sector_cno_1d!=.
+* 
+replace sectores = 1 if sector_cno_1d ==1
+replace sectores = 2 if sector_cno_1d ==2
+replace sectores = 3 if sector_cno_1d ==3
+replace sectores = 4 if sector_cno_1d ==4
+replace sectores = 5 if sector_cno_1d ==5
+replace sectores = 6 if sector_cno_1d ==6
+replace sectores = 7 if sector_cno_1d ==7
+replace sectores = 8 if sector_cno_1d ==8
+replace sectores = 9 if sector_cno_1d ==9
+replace sectores = 0 if sector_cno_1d ==0
+
+label define sectores 1 "Admin. Pública" 2 "Cientificos" 3 "Técnicos" 4 "Administrativos" 5 "Comercio y mercados" 6 "Agricultura" 7 "Construcción" 8 "Maquinaria Ind. Transporte" 9 "Ocup. Elementales" 0 "Ocup. Militares y policiales"
+label values sectores sectores
+
+* No hay datos de migrantes entre 2020M4-2020M8
+gen Q = 0 if inlist(year,2018,2019) | (year == 2020 & (mes == "01" | mes == "02" | mes == "03"))
+replace Q = 1 if (year == 2020 & (mes == "09" | mes == "10" | mes == "11"))
+replace Q = 2 if (year == 2020 & mes == "12") | (year == 2021 & (mes == "01" | mes == "02"))
+replace Q = 3 if (year == 2021 & (mes == "03" | mes == "04" | mes == "05"))
+replace Q = 4 if (year == 2021 & (mes == "06" | mes == "07" | mes == "08"))
+replace Q = 5 if (year == 2021 & (mes == "09" | mes == "10" | mes == "11" | mes == "12"))
+label define Q 0 "2018-2020M3" 1 "2020M9-2020M11" 2 "2020M12-2021M2" 3 "2021M3-2021M5" 4 "2021M6-2021M8" 5 "2021M9-2021M12"
+label values Q Q 
+
+gen covid = 0 if inlist(year,2018,2019) | (year == 2020 & (mes == "01" | mes == "02" | mes == "03"))
+replace covid = 1 if covid == . 
+
+gen ocupado = 1 if pob_categoria == 1
+replace ocupado = 0 if pob_categoria == 2
+
+gen activo = 1 if inlist(pob_categoria,1,2)
+replace activo = 0 if pob_categoria == 3
+
+gen ln_ing_t = ln(ing_t) if year == 2018
+replace ln_ing_t = ln(ing_t/1.019000916) if year == 2019
+replace ln_ing_t = ln(ing_t/1.03910817) if year == 2020
+replace ln_ing_t = ln(ing_t/1.105926849) if year == 2021
+
+gen ln_h_t = ln(h_t)
+
+gen ln_ing_h_t = ln(ing_h_t) if year == 2018
+replace ln_ing_h_t = ln(ing_h_t/1.019000916) if year == 2019
+replace ln_ing_h_t = ln(ing_h_t/1.03910817) if year == 2020
+replace ln_ing_h_t = ln(ing_h_t/1.105926849) if year == 2021
+
+summ  ln_ing_t ing_t ln_h_t h_t ln_ing_h_t ing_h_t ocupado activo
+
+summ  ln_ing_t ing_t ln_h_t h_t ln_ing_h_t ing_h_t ocupado activo if Q == 0
+
+save "$dir/Replication Region/Data/base_peru", replace
+
+
+******************************
+******					
+******					Chile
+******					
+******************************
+use "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV_region/Chile/MigrantesENE20192021", clear
+drop cat_ocup
+
+*Variable binaria ocupado
+gen ocup = 1 if activ == 1
+replace ocup = 0 if activ == 2 & !missing(activ) 
+
+*Variable binaria desocupado
+gen desocup = 1 if activ == 2
+replace desocup = 0 if activ !=2 & !missing(activ) 
+
+*Variable binaria activo
+gen ft = 1 if activ != 3 & !missing(activ) 
+replace ft = 0 if activ == 3 
+
+*Variable ingreso en dólares
+gen y_dolar = ln(ing_t_t/762.8848)
+
+*Variable ingreso por hora
+
+gen y_hora = ln(ing_t_t/762.8848/mhrs)
+
+*Variable ln horas trabajadas mensuales
+gen ln_hora = ln(mhrs)
+
+*Variable fecha
+gen fecha = ym(ano,mes)
+
+*Variable migrante
+gen mig = 1 if chileno == 0 
+replace mig = 0 if chileno == 1
+
+gen migrante_loc_reciente = 1 if migrante_origen == 1 & migrante_duracion == 2
+replace migrante_loc_reciente = 0 if migrante_origen == 0 | migrante_origen == 2 | (migrante_origen == 1 & migrante_duracion == 1 )
+
+gen migrante_loc_tlv = 1 if migrante_origen == 1 & migrante_duracion == 1
+replace migrante_loc_tlv = 0 if migrante_origen == 0 | migrante_origen == 2 | (migrante_origen == 1 & migrante_duracion == 2)
+
+gen migrante_loc = 1 if migrante_origen == 1 & (migrante_duracion == 1 | migrante_duracion == 2)
+replace migrante_loc = 0 if migrante_origen == 0 | migrante_origen == 2
+
+gen migrante_extranjero = 1 if migrante_origen == 2
+replace migrante_extranjero = 0 if migrante_origen == 1 | migrante_origen == 0
+
+gen migrante_extranjero_reciente = 1 if migrante_origen == 2 & migrante_duracion == 2
+replace migrante_extranjero_reciente = 0 if migrante_origen == 1 | migrante_origen == 0 | (migrante_origen == 2 & migrante_duracion == 1)
+
+gen migrante_extranjero_tlv = 1 if migrante_origen == 2 & migrante_duracion == 1
+replace migrante_extranjero_tlv = 0 if migrante_origen == 1 | migrante_origen == 0 | (migrante_origen == 2 & migrante_duracion == 2)
+
+
+*Variable periodos (solo tres periodos para que incluya salario)
+gen pandemia = 0 if fecha <= 721
+replace pandemia = 1 if inrange(fecha,724,733)
+replace pandemia = 2 if inrange(fecha,736,743)
+
+gen Q = 0 if fecha<=tm(2020m3)
+replace Q = 1 if fecha>=tm(2020m4) & fecha<=tm(2020m6)
+replace Q = 2 if fecha>=tm(2020m7) & fecha<=tm(2020m9)
+replace Q = 3 if fecha>=tm(2020m10) & fecha<=tm(2020m12)
+replace Q = 4 if fecha>=tm(2021m1) & fecha<=tm(2021m3)
+replace Q = 5 if fecha>=tm(2021m4) & fecha<=tm(2021m6)
+replace Q = 6 if fecha>=tm(2021m7) & fecha<=tm(2021m9)
+replace Q = 7 if fecha>=tm(2021m10) & fecha<=tm(2021m12)
+
+label define Q 0 "2019m1-2020M3" 1 "2020M4-2020M6" 2 "2020M7-2020M9" 3 "2020M10-2020M12" 4 "2021M1-2021M3" 5 "2021M4-2021M6" 6 "2021M7-2021M9" 7 "2021M10-2021M12"
+label values Q Q 
+
+
+*Variable binaria rural == 1
+gen rural = 1 if tipo == 3
+replace	rural = 0 if tipo != 3 & !missing(tipo)
+
+
+*Categoría ocupacional
+gen cat_ocup = 1 if categoria_ocupacion == 1
+replace cat_ocup = 2 if categoria_ocupacion == 2
+replace cat_ocup = 3 if categoria_ocupacion == 3 | categoria_ocupacion == 4
+replace cat_ocup = 4 if categoria_ocupacion == 7
+replace cat_ocup = 5 if categoria_ocupacion == 5 | categoria_ocupacion == 6
+replace cat_ocup = 6 if categoria_ocupacion <1  & !missing(categoria_ocupacion)
+
+label define ocup 1 "Empleador" 2 "Cuenta propia" 3 "Empleado" 4 "Familiar no remunerado" ///
+5 "Servicio doméstico" 6 "No corresponde", modify
+label values cat_ocup ocup
+
+
+replace nivel = . if nivel > 14
+
+gen educ = 1 if nivel < 3 // sin educación, sala cuna, kinder
+replace educ = 2 if nivel == 3 // básica o primaria
+replace educ = 3 if inrange(nivel,4,6) // media, media tecnica y humanista
+replace educ = 4 if inrange(nivel,7,8) // instituto profesional o tecnico
+replace educ = 5 if inrange(nivel,9,12) // pregrado, posgrado, magister, doctorado
+
+label define educ 1 "Sin educación" 2 "Educación Básica" /// 
+3 "Educación Media" 4 "Educación Superior Técnica" ///
+5 "Educación Superior Universitaria"
+label values educ educ
+
+label var ocup "Ocupado (Pob.total)"
+label var desocup "Desocupado (Pob.total)"
+label var ft "Activo (Pob.total)"
+label var y_dolar "Ingreso total del trabajo (USD) ln"
+label var y_hora "Ingreso por hora (USD) ln"
+label var pandemia "Dummy pandemia == 1"
+label var rural "Rural == 1"
+label var cat_ocup "Categoría ocupacional"
+label var educ "Nivel educacional"
+
+save "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV_region/Chile/base_regresiones_chile", replace
