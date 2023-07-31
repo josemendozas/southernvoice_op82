@@ -1,0 +1,65 @@
+*============================================================*
+*	Regresiones SV
+*============================================================*
+
+clear all
+
+pause on
+set more off
+
+global wd "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV_region"
+
+
+/*                      Chile                 */
+
+use "$wd/Chile/base_regresiones_chile", clear
+
+summ ocup ft y_dolar ln_hora y_hora informal
+
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_loc_reciente == 1
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_loc_reciente == 0
+
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_loc_tlv == 1
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_loc_tlv == 0
+
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_extranjero_reciente == 1
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_extranjero_reciente == 0
+
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_extranjero_tlv == 1
+summ ocup ft y_dolar ln_hora y_hora informal if migrante_extranjero_tlv == 0
+
+/*						Peru 				 */
+
+use "$wd/Peru/base_regresiones_peru", clear
+
+summ ocupado activo ln_ing_t ln_h_t ln_ing_h_t informal 
+
+summ ocupado activo ln_ing_t ln_h_t ln_ing_h_t informal if migrante_loc_reciente_prov == 1
+summ ocupado activo ln_ing_t ln_h_t ln_ing_h_t informal if migrante_loc_reciente_prov == 0
+
+summ ocupado activo ln_ing_t ln_h_t ln_ing_h_t informal if migrante_extranjero == 1
+summ ocupado activo ln_ing_t ln_h_t ln_ing_h_t informal if migrante_extranjero == 0
+
+
+/*                      Paraguay                 */
+
+use "$wd/Paraguay/base_regresiones_paraguay", clear
+
+
+summ ocupados activos ln_ing informalidad 
+
+summ ocupados activos ln_ing informalidad if migrante_ext_reciente == 1
+summ ocupados activos ln_ing informalidad if migrante_ext_reciente == 0
+
+summ ocupados activos ln_ing informalidad if migrante_ext_tlv == 1
+summ ocupados activos ln_ing informalidad if migrante_ext_tlv == 0
+
+summ ocupados activos ln_ing informalidad if migrante_loc_reciente == 1
+summ ocupados activos ln_ing informalidad if migrante_loc_reciente == 0
+
+summ ocupados activos ln_ing informalidad if migrante_loc_tlv == 1
+summ ocupados activos ln_ing informalidad if migrante_loc_tlv == 0
+
+
+
+
