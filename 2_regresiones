@@ -1,0 +1,355 @@
+*============================================================*
+*	Regresiones SV
+*============================================================*
+
+clear all
+
+pause on
+set more off
+
+global wd "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV_region"
+
+/*						Peru 				 */
+
+use "$wd/Peru/base_regresiones_peru", clear
+
+eststo clear
+eststo: reg ocupado    ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.rural i.dpto [pw = fac500a], robust
+eststo: reg activo     ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.rural i.dpto  [pw = fac500a], robust
+eststo: reg ln_ing_t   ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_h_t 	   ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_ing_h_t ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.rural i.dpto i.informal [pw = fac500a], robust
+
+
+esttab using "$wd/Peru/out/tabla_1.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q 0.mujer 1.cat_ocup 0.informal 0.rural *dpto) ///
+note("") varwidth(25) ///
+rename(1.Q "2020M9-2020M11" 2.Q "2020M12-2021M2" 3.Q "2021M3-2021M5" 4.Q "2021M6-2021M8" 5.Q "2021M9-2021M12" ///
+1.mujer "Mujer" 2.cat_ocup "Independiente" 3.cat_ocup "Empleado" 4.cat_ocup "Obrero" 5.cat_ocup "TFNR" ///
+6.cat_ocup "TrabajoHogar" 7.cat_ocup "Otro" edad "Edad" 1.educ_cat "Educación1" 2.educ_cat "Educación2" ///
+3.educ_cat "Educación3" 4.educ_cat "Educación4" 5.educ_cat "Educación5" 1.informal "Informal" _cons "Constante" ///
+1.rural "Rural")  ///
+addnote("Estadístico t en paréntesis." "No hay datos de migrantes entre los meses 2020M4-2020M8." ///
+"La categoría base para las dummies trimestrales es 2018M1-2020M3." ///
+"Se incluye efectos fijos a nivel de departamento.") replace
+
+
+eststo clear
+eststo: reg ocupado    ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto [pw = fac500a], robust
+eststo: reg activo     ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto [pw = fac500a], robust
+eststo: reg ln_ing_t   ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_h_t 	   ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_ing_h_t ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto i.informal [pw = fac500a], robust
+
+esttab using "$wd/Peru/out/tabla_2.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q 0.mujer 1.cat_ocup 0.informal 0.rural *dpto 0.migrante_loc_reciente_prov) ///
+note("") varwidth(25) ///
+rename(1.Q "2020M9-2020M11" 2.Q "2020M12-2021M2" 3.Q "2021M3-2021M5" 4.Q "2021M6-2021M8" 5.Q "2021M9-2021M12" ///
+1.mujer "Mujer" 2.cat_ocup "Independiente" 3.cat_ocup "Empleado" 4.cat_ocup "Obrero" 5.cat_ocup "TFNR" ///
+6.cat_ocup "TrabajoHogar" 7.cat_ocup "Otro" edad "Edad" 1.educ_cat "Educación1" 2.educ_cat "Educación2" ///
+3.educ_cat "Educación3" 4.educ_cat "Educación4" 5.educ_cat "Educación5" 1.informal "Informal" _cons "Constante" ///
+1.rural "Rural" 1.migrante_loc_reciente_prov "MigranteLocalReciente")  ///
+addnote("Estadístico t en paréntesis." "No hay datos de migrantes entre los meses 2020M4-2020M8." ///
+"La categoría base para las dummies trimestrales es 2018M1-2020M3." ///
+"Se incluye efectos fijos a nivel de departamento.") replace
+
+
+eststo clear
+eststo: reg ocupado    ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto [pw = fac500a], robust
+eststo: reg activo     ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto [pw = fac500a], robust
+eststo: reg ln_ing_t   ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_h_t 	   ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_ing_h_t ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto i.informal [pw = fac500a], robust
+
+esttab using "$wd/Peru/out/tabla_3.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q 0.mujer 1.cat_ocup 0.informal 0.rural *dpto 0.migrante_extranjero) ///
+note("") varwidth(25) ///
+rename(1.Q "2020M9-2020M11" 2.Q "2020M12-2021M2" 3.Q "2021M3-2021M5" 4.Q "2021M6-2021M8" 5.Q "2021M9-2021M12" ///
+1.mujer "Mujer" 2.cat_ocup "Independiente" 3.cat_ocup "Empleado" 4.cat_ocup "Obrero" 5.cat_ocup "TFNR" ///
+6.cat_ocup "TrabajoHogar" 7.cat_ocup "Otro" edad "Edad" 1.educ_cat "Educación1" 2.educ_cat "Educación2" ///
+3.educ_cat "Educación3" 4.educ_cat "Educación4" 5.educ_cat "Educación5" 1.informal "Informal" _cons "Constante" ///
+1.rural "Rural" 1.migrante_extranjero "MigranteExtranjero")  ///
+addnote("Estadístico t en paréntesis." "No hay datos de migrantes entre los meses 2020M4-2020M8." ///
+"La categoría base para las dummies trimestrales es 2018M1-2020M3." ///
+"Se incluye efectos fijos a nivel de departamento.") replace
+
+
+eststo clear
+eststo: reg ocupado    ib0.Q#i.migrante_loc_reciente_prov ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto [pw = fac500a] , robust
+eststo: reg activo     ib0.Q#i.migrante_loc_reciente_prov ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto [pw = fac500a], robust
+eststo: reg ln_ing_t   ib0.Q#i.migrante_loc_reciente_prov ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_h_t 	   ib0.Q#i.migrante_loc_reciente_prov ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_ing_h_t ib0.Q#i.migrante_loc_reciente_prov ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_loc_reciente_prov i.rural i.dpto i.informal [pw = fac500a], robust
+
+esttab using "$wd/Peru/out/tabla_4.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001) ///
+drop(0.Q#0.migrante_loc_reciente_prov 0.Q#1.migrante_loc_reciente_prov *dpto ///
+ 0.informal 0.rural 1.cat_ocup 0.mujer 0.migrante_loc_reciente_prov) ///
+note("") varwidth(35) ///
+rename(1.Q#0.migrante_loc_reciente_prov "(2020M9-2020M11)xNoMigrLocRec" 1.Q#1.migrante_loc_reciente_prov "(2020M9-2020M11)xMigranteLocRec" ///
+ 	   2.Q#0.migrante_loc_reciente_prov "(2020M12-2021M2)xNoMigrLocRec" 2.Q#1.migrante_loc_reciente_prov "(2020M12-2021M2)xMigranteLocRec" ///
+ 	   3.Q#0.migrante_loc_reciente_prov "(2021M3-2021M5)xNoMigrLocRec"  3.Q#1.migrante_loc_reciente_prov "(2021M3-2021M5)xMigranteLocRec"  ///
+ 	   4.Q#0.migrante_loc_reciente_prov "(2021M6-2021M8)xNoMigrLocRec"  4.Q#1.migrante_loc_reciente_prov "(2021M6-2021M8)xMigranteLocRec"  ///
+ 	   5.Q#0.migrante_loc_reciente_prov "(2021M9-2021M12)xNoMigrLocRec" 5.Q#1.migrante_loc_reciente_prov "(2021M9-2021M12)xMigranteLocRec"  ///
+1.mujer "Mujer" 2.cat_ocup "Independiente" 3.cat_ocup "Empleado" 4.cat_ocup "Obrero" 5.cat_ocup "TFNR" ///
+6.cat_ocup "TrabajoHogar" 7.cat_ocup "Otro" edad "Edad" 1.educ_cat "Educación1" 2.educ_cat "Educación2" ///
+3.educ_cat "Educación3" 4.educ_cat "Educación4" 5.educ_cat "Educación5" 1.informal "Informal" _cons "Constante" ///
+1.rural "Rural" 1.migrante_loc_reciente_prov "MigranteLocReciente")  ///
+addnote("Estadístico t en paréntesis." "No hay datos de migrantes entre los meses 2020M4-2020M8." ///
+"La categoría base para las dummies trimestrales es 2018M1-2020M3." ///
+"Se incluye efectos fijos a nivel de departamento.") replace
+
+
+eststo clear
+eststo: reg ocupado    ib0.Q#i.migrante_extranjero ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto [pw = fac500a], robust
+eststo: reg activo     ib0.Q#i.migrante_extranjero ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto [pw = fac500a], robust
+eststo: reg ln_ing_t   ib0.Q#i.migrante_extranjero ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_h_t 	   ib0.Q#i.migrante_extranjero ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto i.informal [pw = fac500a], robust
+eststo: reg ln_ing_h_t ib0.Q#i.migrante_extranjero ib0.Q i.mujer i.cat_ocup edad i.mujer i.educ_cat i.migrante_extranjero i.rural i.dpto i.informal [pw = fac500a], robust
+
+esttab using "$wd/Peru/out/tabla_5.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001) ///
+drop(0.Q#0.migrante_extranjero 0.Q#1.migrante_extranjero *dpto ///
+ 0.informal 0.rural 1.cat_ocup 0.mujer 0.migrante_extranjero) ///
+note("") varwidth(35) ///
+rename(1.Q#0.migrante_extranjero "(2020M9-2020M11)xNoMigrExt" 1.Q#1.migrante_extranjero "(2020M9-2020M11)xMigrExt" ///
+ 	   2.Q#0.migrante_extranjero "(2020M12-2021M2)xNoMigrExt" 2.Q#1.migrante_extranjero "(2020M12-2021M2)xMigrExt" ///
+ 	   3.Q#0.migrante_extranjero "(2021M3-2021M5)xNoMigrExt"  3.Q#1.migrante_extranjero "(2021M3-2021M5)xMigrExt"  ///
+ 	   4.Q#0.migrante_extranjero "(2021M6-2021M8)xNoMigrExt"  4.Q#1.migrante_extranjero "(2021M6-2021M8)xMigrExt"  ///
+ 	   5.Q#0.migrante_extranjero "(2021M9-2021M12)xNoMigrExt" 5.Q#1.migrante_extranjero "(2021M9-2021M12)xMigrExt"  ///
+1.mujer "Mujer" 2.cat_ocup "Independiente" 3.cat_ocup "Empleado" 4.cat_ocup "Obrero" 5.cat_ocup "TFNR" ///
+6.cat_ocup "TrabajoHogar" 7.cat_ocup "Otro" edad "Edad" 1.educ_cat "Educación1" 2.educ_cat "Educación2" ///
+3.educ_cat "Educación3" 4.educ_cat "Educación4" 5.educ_cat "Educación5" p1.informal "Informal" _cons "Constante" ///
+1.rural "Rural" 1.migrante_extranjero "MigranteLocReciente")  ///
+addnote("Estadístico t en paréntesis." "No hay datos de migrantes entre los meses 2020M4-2020M8." ///
+"La categoría base para las dummies trimestrales es 2018M1-2020M3." ///
+"Se incluye efectos fijos a nivel de departamento.") replace
+ 
+/*                      Chile                 */
+
+use "$wd/Chile/base_regresiones_chile", clear
+
+eststo clear
+eststo: reg ocup       ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural [w = fact_cal], robust
+eststo: reg ft         ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_1.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal], robust
+eststo: reg ft         ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_2.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+eststo clear
+eststo: reg ocup       ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal], robust
+eststo: reg ft         ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_3.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal], robust
+eststo: reg ft         ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_4.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal], robust
+eststo: reg ft         ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_5.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q#i.migrante_loc_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal], robust
+eststo: reg ft         ib0.Q#i.migrante_loc_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q#i.migrante_loc_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q#i.migrante_loc_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q#i.migrante_loc_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_reciente [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_6.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q#i.migrante_loc_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal], robust
+eststo: reg ft         ib0.Q#i.migrante_loc_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q#i.migrante_loc_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q#i.migrante_loc_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q#i.migrante_loc_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_loc_tlv [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_7.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q#i.migrante_extranjero_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal], robust
+eststo: reg ft         ib0.Q#i.migrante_extranjero_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q#i.migrante_extranjero_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q#i.migrante_extranjero_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q#i.migrante_extranjero_reciente ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_reciente [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_8.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocup       ib0.Q#i.migrante_extranjero_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal], robust
+eststo: reg ft         ib0.Q#i.migrante_extranjero_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal], robust
+eststo: reg y_dolar    ib0.Q#i.migrante_extranjero_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal_esi], robust
+eststo: reg ln_hora    ib0.Q#i.migrante_extranjero_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal_esi], robust
+eststo: reg y_hora     ib0.Q#i.migrante_extranjero_tlv ib0.Q ib1.genero ib1o6.cat_ocup edad i.educ ib1.region ib0.rural i.migrante_extranjero_tlv [w = fact_cal_esi], robust
+esttab using "$wd/Chile/out/tabla_9.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  drop(0.Q *region) ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+/*                      Paraguay                 */
+
+use "/Users/joseantoniomendozasanchez/Dropbox/Projects/SV_region/Paraguay/base_regresiones_paraguay", clear
+
+eststo clear
+eststo: reg ocupados   i.year i.mujer sector* edad educ i.urbano [w = peso], robust
+eststo: reg activos    i.year i.mujer sector* edad educ i.urbano [w = peso], robust
+eststo: reg ln_ing     i.year i.mujer sector* edad educ i.urbano [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_1.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)   ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+eststo clear
+eststo: reg ocupados   i.year i.mujer sector* edad educ i.urbano i.migrante_ext_reciente [w = peso], robust
+eststo: reg activos    i.year i.mujer sector* edad educ i.urbano i.migrante_ext_reciente [w = peso], robust
+eststo: reg ln_ing     i.year i.mujer sector* edad educ i.urbano i.migrante_ext_reciente [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_2.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)   ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+eststo clear
+eststo: reg ocupados   i.year i.mujer sector* edad educ i.urbano i.migrante_ext_tlv [w = peso], robust
+eststo: reg activos    i.year i.mujer sector* edad educ i.urbano i.migrante_ext_tlv [w = peso], robust
+eststo: reg ln_ing     i.year i.mujer sector* edad educ i.urbano i.migrante_ext_tlv [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_3.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocupados   i.year i.mujer sector* edad educ i.urbano i.migrante_loc_reciente [w = peso], robust
+eststo: reg activos    i.year i.mujer sector* edad educ i.urbano i.migrante_loc_reciente [w = peso], robust
+eststo: reg ln_ing     i.year i.mujer sector* edad educ i.urbano i.migrante_loc_reciente [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_4.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)   ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocupados   i.year i.mujer sector* edad educ i.urbano i.migrante_loc_tlv [w = peso], robust
+eststo: reg activos    i.year i.mujer sector* edad educ i.urbano i.migrante_loc_tlv [w = peso], robust
+eststo: reg ln_ing     i.year i.mujer sector* edad educ i.urbano i.migrante_loc_tlv [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_5.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+
+
+eststo clear
+eststo: reg ocupados   i.year#i.migrante_ext_reciente i.year i.mujer sector* edad educ i.urbano i.migrante_ext_reciente [w = peso], robust
+eststo: reg activos    i.year#i.migrante_ext_reciente i.year i.mujer sector* edad educ i.urbano i.migrante_ext_reciente [w = peso], robust
+eststo: reg ln_ing     i.year#i.migrante_ext_reciente i.year i.mujer sector* edad educ i.urbano i.migrante_ext_reciente [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_6.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)   ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+eststo clear
+eststo: reg ocupados   i.year#i.migrante_ext_tlv i.year i.mujer sector* edad educ i.urbano i.migrante_ext_tlv [w = peso], robust
+eststo: reg activos    i.year#i.migrante_ext_tlv i.year i.mujer sector* edad educ i.urbano i.migrante_ext_tlv [w = peso], robust
+eststo: reg ln_ing     i.year#i.migrante_ext_tlv i.year i.mujer sector* edad educ i.urbano i.migrante_ext_tlv [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_7.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)   ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocupados   i.year#i.migrante_loc_reciente i.year i.mujer sector* edad educ i.urbano i.migrante_loc_reciente [w = peso], robust
+eststo: reg activos    i.year#i.migrante_loc_reciente i.year i.mujer sector* edad educ i.urbano i.migrante_loc_reciente [w = peso], robust
+eststo: reg ln_ing     i.year#i.migrante_loc_reciente i.year i.mujer sector* edad educ i.urbano i.migrante_loc_reciente [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_8.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)   ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+eststo clear
+eststo: reg ocupados   i.year#i.migrante_loc_tlv i.year i.mujer sector* edad educ i.urbano i.migrante_loc_tlv [w = peso], robust
+eststo: reg activos    i.year#i.migrante_loc_tlv i.year i.mujer sector* edad educ i.urbano i.migrante_loc_tlv [w = peso], robust
+eststo: reg ln_ing     i.year#i.migrante_loc_tlv i.year i.mujer sector* edad educ i.urbano i.migrante_loc_tlv [w = peso], robust
+
+esttab using "$wd/Paraguay/out/tabla_9.csv",star(+ 0.10 * 0.05 ** 0.01 *** 0.001)  ///
+note("") varwidth(25) ///
+addnote("Estadístico t en paréntesis." ///
+"La categoría base para las dummies trimestrales es 2019m1-2020M3." ///
+"Se incluye efectos fijos a nivel de región.") replace
+
+
+
+
